@@ -1,0 +1,41 @@
+{
+  "private": true,
+  "sideEffects": false,
+  "scripts": {
+    "build": "npm run build:css && remix build",
+    "build:css": "tailwindcss -m -i ./styles/app.css -o app/styles/app.css",
+    "deploy": "npm run build && wrangler publish",
+    "dev:remix": "remix watch",
+    "dev:miniflare": "cross-env NODE_ENV=development miniflare ./build/index.js --watch",
+    "dev": "remix build && run-p dev:*",
+    "dev:css": "tailwindcss -w -i ./styles/app.css -o app/styles/app.css",
+    "start": "cross-env NODE_ENV=production miniflare ./build/index.js"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.1.1",
+    "@remix-run/cloudflare": "^1.7.0",
+    "@remix-run/cloudflare-workers": "^1.7.0",
+    "@remix-run/react": "^1.7.0",
+    "cross-env": "^7.0.3",
+    "marked": "^4.1.0",
+    "notion-to-md": "^2.5.5",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^3.14.1",
+    "@remix-run/dev": "^1.7.0",
+    "@remix-run/eslint-config": "^1.7.0",
+    "autoprefixer": "^10.4.8",
+    "concurrently": "^7.3.0",
+    "eslint": "^8.20.0",
+    "miniflare": "^2.6.0",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.16",
+    "tailwindcss": "^3.1.8",
+    "wrangler": "^2.0.22"
+  },
+  "engines": {
+    "node": ">=16.13"
+  }
+}
