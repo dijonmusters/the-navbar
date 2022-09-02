@@ -5,35 +5,29 @@ import { marked } from "marked";
 import { NotionToMarkdown } from "notion-to-md";
 
 export const loader = async ({ params }) => {
-  const notion = new Client({
-    auth: NOTION_API_SECRET,
-    notionVersion: "2022-02-22",
-  });
-
-  const page = await notion.databases.query({
-    database_id: DATABASE_ID,
-    filter: {
-      property: "Slug",
-      formula: {
-        string: {
-          equals: `/episodes/${params.slug}`,
-        },
-      },
+  const resp = await fetch("https://cache.jonmeyers.workers.dev", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
+    body: JSON.stringify({
+      query: `
+        query GetEpisode($slug: String!) {
+          episode(slug: $slug) {
+            audioUrl
+            html
+          }
+        }
+      `,
+      variables: {
+        slug: params.slug,
+      },
+    }),
   });
 
-  const [rawEpisode] = page.results;
-
-  const n2m = new NotionToMarkdown({ notionClient: notion });
-  const mdblocks = await n2m.pageToMarkdown(rawEpisode.id);
-  const md = n2m.toMarkdownString(mdblocks);
-  const html = marked.parse(md);
-
-  const episode = {
-    audioUrl: rawEpisode.properties["Audio URL"].url,
-    html,
-  };
-
+  const {
+    data: { episode },
+  } = await resp.json();
   return json({ episode });
 };
 

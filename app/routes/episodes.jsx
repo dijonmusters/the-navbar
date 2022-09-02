@@ -3,8 +3,27 @@ import { useLoaderData, Outlet } from "@remix-run/react";
 import { Link } from "react-router-dom";
 
 export const loader = async () => {
-  const resp = await fetch("https://cache.jonmeyers.workers.dev");
-  const episodes = await resp.json();
+  const resp = await fetch("https://cache.jonmeyers.workers.dev", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query: `
+        query {
+          episodes {
+            id
+            title
+            slug
+          }
+        }
+      `,
+    }),
+  });
+
+  const {
+    data: { episodes },
+  } = await resp.json();
   return json({ episodes });
 };
 
